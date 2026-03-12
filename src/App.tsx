@@ -7,6 +7,7 @@ import TwoStrikeAnalysis from './components/TwoStrikeAnalysis';
 import HotColdZone from './components/HotColdZone';
 import PitchTypePerformance from './components/PitchTypePerformance';
 import PlateDiscipline from './components/PlateDiscipline';
+import VelocityAnalysis from './components/VelocityAnalysis';
 import ScoutingInsights from './components/ScoutingInsights';
 import SprayChart from './components/SprayChart';
 
@@ -123,6 +124,11 @@ export default function App() {
             {/* Plate Discipline */}
             <section>
               <PlateDiscipline pitches={filteredPitches} />
+            </section>
+
+            {/* Velocity Band Analysis */}
+            <section>
+              <VelocityAnalysis pitches={filteredPitches} />
             </section>
 
             {/* Two-Strike Analysis */}
