@@ -1,5 +1,8 @@
+import { useState, useMemo } from 'react';
 import { DomPitch } from '../data/domBatterData';
 import { PITCH_COLORS, getResultColor } from '../utils/pitchColors';
+
+type CountFilter = 'ALL' | 'FIRST' | '2S';
 
 interface PitchLocationChartProps {
   pitches: DomPitch[];
@@ -105,17 +108,57 @@ function StrikeZonePanel({ pitches, title }: PitchLocationChartProps) {
   );
 }
 
+const COUNT_TABS: { value: CountFilter; label: string }[] = [
+  { value: 'ALL', label: '전체' },
+  { value: 'FIRST', label: '초구' },
+  { value: '2S', label: '2스트라이크' },
+];
+
 export default function PitchLocationChart({ pitches }: { pitches: DomPitch[] }) {
-  const vsLHP = pitches.filter(p => p.pitcherHand === 'L');
-  const vsRHP = pitches.filter(p => p.pitcherHand === 'R');
+  const [countFilter, setCountFilter] = useState<CountFilter>('ALL');
+
+  const filtered = useMemo(() => {
+    if (countFilter === 'FIRST') return pitches.filter(p => p.balls === 0 && p.strikes === 0);
+    if (countFilter === '2S') return pitches.filter(p => p.strikes === 2);
+    return pitches;
+  }, [pitches, countFilter]);
+
+  const vsLHP = filtered.filter(p => p.pitcherHand === 'L');
+  const vsRHP = filtered.filter(p => p.pitcherHand === 'R');
 
   return (
     <div>
-      <h3 className="text-sm font-semibold text-slate-300 text-center mb-3">
-        피치 로케이션 맵 (투수 시점)
-      </h3>
+      <div className="flex items-center justify-center gap-3 mb-3 flex-wrap">
+        <h3 className="text-sm font-semibold text-slate-300">
+          피치 로케이션 맵 (투수 시점)
+        </h3>
+        <div className="flex rounded-lg overflow-hidden border border-slate-700">
+          {COUNT_TABS.map(tab => {
+            const count = tab.value === 'ALL' ? pitches.length
+              : tab.value === 'FIRST' ? pitches.filter(p => p.balls === 0 && p.strikes === 0).length
+              : pitches.filter(p => p.strikes === 2).length;
+            const isActive = countFilter === tab.value;
+            return (
+              <button
+                key={tab.value}
+                onClick={() => setCountFilter(tab.value)}
+                className={`px-3 py-1 text-xs font-medium transition-colors ${
+                  isActive
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                }`}
+              >
+                {tab.label}
+                <span className={`ml-1 text-[10px] ${isActive ? 'text-blue-200' : 'text-slate-500'}`}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
       <div className="flex flex-wrap justify-center gap-4">
-        <StrikeZonePanel pitches={pitches} title="전체" />
+        <StrikeZonePanel pitches={filtered} title="전체" />
         <StrikeZonePanel pitches={vsLHP} title="vs 좌투 (LHP)" />
         <StrikeZonePanel pitches={vsRHP} title="vs 우투 (RHP)" />
       </div>
