@@ -56,25 +56,25 @@ function StrikeZonePanel({ pitches, title }: PitchLocationChartProps) {
 
   return (
     <div className="flex flex-col items-center">
-      <span className="text-xs text-slate-400 mb-1 font-medium">{title}</span>
+      <span className="text-xs text-gray-500 mb-1 font-medium">{title}</span>
       <svg width={SVG_W} height={SVG_H} className="rounded-lg">
-        <rect x={0} y={0} width={SVG_W} height={SVG_H} fill="#0f172a" rx={8} />
+        <rect x={0} y={0} width={SVG_W} height={SVG_H} fill="#f8fafc" rx={8} />
         <rect
           x={szLeft} y={szTopY}
           width={szRight - szLeft} height={szBotY - szTopY}
-          fill="none" stroke="#475569" strokeWidth={2}
+          fill="none" stroke="#94a3b8" strokeWidth={2}
         />
         {[1, 2].map(i => (
           <g key={`grid-${i}`}>
             <line
               x1={szLeft + (szRight - szLeft) * i / 3} y1={szTopY}
               x2={szLeft + (szRight - szLeft) * i / 3} y2={szBotY}
-              stroke="#334155" strokeWidth={1} strokeDasharray="3,3"
+              stroke="#cbd5e1" strokeWidth={1} strokeDasharray="3,3"
             />
             <line
               x1={szLeft} y1={szTopY + (szBotY - szTopY) * i / 3}
               x2={szRight} y2={szTopY + (szBotY - szTopY) * i / 3}
-              stroke="#334155" strokeWidth={1} strokeDasharray="3,3"
+              stroke="#cbd5e1" strokeWidth={1} strokeDasharray="3,3"
             />
           </g>
         ))}
@@ -98,12 +98,12 @@ function StrikeZonePanel({ pitches, title }: PitchLocationChartProps) {
         })}
         <text
           x={SVG_W / 2} y={SVG_H - 8}
-          textAnchor="middle" fill="#64748b" fontSize={10}
+          textAnchor="middle" fill="#9ca3af" fontSize={10}
         >
           투수 시점 (Pitcher&apos;s View)
         </text>
       </svg>
-      <span className="text-[10px] text-slate-500 mt-1">{pitches.length} pitches</span>
+      <span className="text-[10px] text-gray-400 mt-1">{pitches.length} pitches</span>
     </div>
   );
 }
@@ -129,10 +129,10 @@ export default function PitchLocationChart({ pitches }: { pitches: DomPitch[] })
   return (
     <div>
       <div className="flex items-center justify-center gap-3 mb-3 flex-wrap">
-        <h3 className="text-sm font-semibold text-slate-300">
+        <h3 className="text-sm font-semibold text-gray-700">
           피치 로케이션 맵 (투수 시점)
         </h3>
-        <div className="flex rounded-lg overflow-hidden border border-slate-700">
+        <div className="flex rounded-lg overflow-hidden border border-gray-300">
           {COUNT_TABS.map(tab => {
             const count = tab.value === 'ALL' ? pitches.length
               : tab.value === 'FIRST' ? pitches.filter(p => p.balls === 0 && p.strikes === 0).length
@@ -145,11 +145,11 @@ export default function PitchLocationChart({ pitches }: { pitches: DomPitch[] })
                 className={`px-3 py-1 text-xs font-medium transition-colors ${
                   isActive
                     ? 'bg-blue-600 text-white'
-                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                    : 'bg-gray-200 text-gray-500 hover:bg-gray-300'
                 }`}
               >
                 {tab.label}
-                <span className={`ml-1 text-[10px] ${isActive ? 'text-blue-200' : 'text-slate-500'}`}>
+                <span className={`ml-1 text-[10px] ${isActive ? 'text-blue-200' : 'text-gray-400'}`}>
                   {count}
                 </span>
               </button>

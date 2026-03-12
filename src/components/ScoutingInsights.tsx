@@ -171,10 +171,10 @@ function generateInsights(pitches: DomPitch[], batterInfo: DomBatter | null): In
 }
 
 const ICON_MAP: Record<string, { emoji: string; bg: string; border: string }> = {
-  weakness: { emoji: '🎯', bg: 'bg-green-950/30', border: 'border-green-800/50' },
-  strength: { emoji: '💪', bg: 'bg-blue-950/30', border: 'border-blue-800/50' },
-  strategy: { emoji: '📋', bg: 'bg-amber-950/30', border: 'border-amber-800/50' },
-  caution: { emoji: '⚠️', bg: 'bg-red-950/30', border: 'border-red-800/50' },
+  weakness: { emoji: '🎯', bg: 'bg-green-50', border: 'border-green-300' },
+  strength: { emoji: '💪', bg: 'bg-blue-50', border: 'border-blue-300' },
+  strategy: { emoji: '📋', bg: 'bg-amber-50', border: 'border-amber-300' },
+  caution: { emoji: '⚠️', bg: 'bg-red-50', border: 'border-red-300' },
 };
 
 export default function ScoutingInsights({ pitches, batterInfo }: {
@@ -186,8 +186,8 @@ export default function ScoutingInsights({ pitches, batterInfo }: {
   if (insights.length === 0) return null;
 
   return (
-    <div className="bg-slate-800/30 rounded-xl p-4 border border-slate-700/50">
-      <h3 className="text-sm font-semibold text-slate-200 mb-3">
+    <div className="bg-gray-50 rounded-xl p-4 border border-gray-300">
+      <h3 className="text-sm font-semibold text-gray-800 mb-3">
         🇰🇷 한국 투수를 위한 스카우팅 인사이트
       </h3>
 
@@ -202,8 +202,8 @@ export default function ScoutingInsights({ pitches, batterInfo }: {
               <div className="flex items-start gap-2">
                 <span className="text-sm mt-0.5">{style.emoji}</span>
                 <div>
-                  <div className="text-xs font-semibold text-slate-200">{insight.title}</div>
-                  <div className="text-[11px] text-slate-400 mt-0.5">{insight.detail}</div>
+                  <div className="text-xs font-semibold text-gray-800">{insight.title}</div>
+                  <div className="text-[11px] text-gray-500 mt-0.5">{insight.detail}</div>
                 </div>
               </div>
             </div>

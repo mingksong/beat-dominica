@@ -91,15 +91,15 @@ function StatBar({ label, value, desc, color, benchmark }: {
   benchmark?: { avg: number; good: string };
 }) {
   return (
-    <div className="flex items-center justify-between py-1.5 border-b border-slate-800/50">
+    <div className="flex items-center justify-between py-1.5 border-b border-gray-200">
       <div>
-        <span className="text-xs text-slate-300 font-medium">{label}</span>
-        <span className="text-[10px] text-slate-500 ml-1.5">{desc}</span>
+        <span className="text-xs text-gray-700 font-medium">{label}</span>
+        <span className="text-[10px] text-gray-400 ml-1.5">{desc}</span>
       </div>
       <div className="flex items-center gap-2">
         <span className="text-sm font-bold" style={{ color }}>{value}</span>
         {benchmark && (
-          <span className="text-[9px] text-slate-600">MLB avg: {benchmark.avg}% ({benchmark.good})</span>
+          <span className="text-[9px] text-gray-500">MLB avg: {benchmark.avg}% ({benchmark.good})</span>
         )}
       </div>
     </div>
@@ -128,17 +128,17 @@ export default function PlateDiscipline({ pitches }: { pitches: DomPitch[] }) {
   const bbColor = bbPct >= 12 ? '#ef4444' : bbPct >= 8 ? '#fbbf24' : '#22c55e';
 
   return (
-    <div className="bg-slate-800/30 rounded-xl p-4 border border-slate-700/50">
-      <h3 className="text-sm font-semibold text-slate-200 mb-1">
+    <div className="bg-gray-50 rounded-xl p-4 border border-gray-300">
+      <h3 className="text-sm font-semibold text-gray-800 mb-1">
         타석 규율 분석 (Plate Discipline)
       </h3>
-      <p className="text-[10px] text-slate-500 mb-3">
+      <p className="text-[10px] text-gray-400 mb-3">
         투수 시점: <span className="text-green-400">녹색</span> = 투수에게 유리 / <span className="text-red-400">빨강</span> = 타자에게 유리
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <h4 className="text-[10px] text-slate-500 font-medium uppercase tracking-wider mb-1">스윙 경향</h4>
+          <h4 className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-1">스윙 경향</h4>
           <StatBar label="O-Swing%" value={`${oSwingPct.toFixed(1)}%`} desc="존 밖 스윙" color={oSwingColor} />
           <StatBar label="Z-Swing%" value={`${zSwingPct.toFixed(1)}%`} desc="존 안 스윙" color="#94a3b8" />
           <StatBar label="Swing%" value={`${swingPct.toFixed(1)}%`} desc="전체 스윙" color="#94a3b8" />
@@ -146,7 +146,7 @@ export default function PlateDiscipline({ pitches }: { pitches: DomPitch[] }) {
         </div>
 
         <div>
-          <h4 className="text-[10px] text-slate-500 font-medium uppercase tracking-wider mb-1">컨택 & 결과</h4>
+          <h4 className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-1">컨택 & 결과</h4>
           <StatBar label="Z-Contact%" value={`${zContactPct.toFixed(1)}%`} desc="존 안 컨택" color={zContactColor} />
           <StatBar label="O-Contact%" value={`${oContactPct.toFixed(1)}%`} desc="존 밖 컨택" color="#94a3b8" />
           <StatBar label="K%" value={`${kPct.toFixed(1)}%`} desc="삼진율" color={kColor} />
@@ -154,19 +154,19 @@ export default function PlateDiscipline({ pitches }: { pitches: DomPitch[] }) {
         </div>
       </div>
 
-      <div className="mt-3 pt-2 border-t border-slate-700/50">
+      <div className="mt-3 pt-2 border-t border-gray-200">
         <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="bg-slate-900/50 rounded p-2">
-            <div className="text-lg font-bold text-white">{stats.totalPitches}</div>
-            <div className="text-[10px] text-slate-500">총 투구</div>
+          <div className="bg-gray-100 rounded p-2">
+            <div className="text-lg font-bold text-gray-900">{stats.totalPitches}</div>
+            <div className="text-[10px] text-gray-400">총 투구</div>
           </div>
-          <div className="bg-slate-900/50 rounded p-2">
-            <div className="text-lg font-bold text-white">{zonePct.toFixed(0)}%</div>
-            <div className="text-[10px] text-slate-500">존 내 비율</div>
+          <div className="bg-gray-100 rounded p-2">
+            <div className="text-lg font-bold text-gray-900">{zonePct.toFixed(0)}%</div>
+            <div className="text-[10px] text-gray-400">존 내 비율</div>
           </div>
-          <div className="bg-slate-900/50 rounded p-2">
-            <div className="text-lg font-bold text-white">{stats.totalABs}</div>
-            <div className="text-[10px] text-slate-500">총 타석</div>
+          <div className="bg-gray-100 rounded p-2">
+            <div className="text-lg font-bold text-gray-900">{stats.totalABs}</div>
+            <div className="text-[10px] text-gray-400">총 타석</div>
           </div>
         </div>
       </div>

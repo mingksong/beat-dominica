@@ -29,11 +29,11 @@ export default function BatterSelector({ selected, onSelect }: BatterSelectorPro
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
               isActive
                 ? 'bg-red-600 border-red-500 text-white shadow-lg shadow-red-500/20'
-                : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:border-slate-600'
+                : 'bg-gray-200 border-gray-300 text-gray-700 hover:bg-gray-300 hover:border-gray-400'
             }`}
           >
             {lastName}
-            <span className={`ml-1 text-[10px] ${isActive ? 'text-red-200' : 'text-slate-500'}`}>
+            <span className={`ml-1 text-[10px] ${isActive ? 'text-red-200' : 'text-gray-400'}`}>
               ({sideLabel}타) {b.pitchCount}
             </span>
           </button>

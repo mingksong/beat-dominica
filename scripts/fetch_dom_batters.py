@@ -128,6 +128,12 @@ def fetch_batter_data(player_id, name, bat_side):
                         if stand in ('L', 'R'):
                             actual_bat_side = stand
 
+                    # Spray chart fields
+                    hc_x_val = row.get('hc_x', None)
+                    hc_y_val = row.get('hc_y', None)
+                    bb_type_val = row.get('bb_type', None)
+                    hit_dist_val = row.get('hit_distance_sc', None)
+
                     pitch = {
                         'batter': name,
                         'batterId': player_id,
@@ -149,6 +155,10 @@ def fetch_batter_data(player_id, name, bat_side):
                         'game': f'{year} MLB',
                         'launchSpeed': safe_float(row.get('launch_speed')) if not pd.isna(row.get('launch_speed', float('nan'))) else None,
                         'launchAngle': safe_float(row.get('launch_angle')) if not pd.isna(row.get('launch_angle', float('nan'))) else None,
+                        'hcX': safe_float(hc_x_val) if (hc_x_val is not None and not pd.isna(hc_x_val)) else None,
+                        'hcY': safe_float(hc_y_val) if (hc_y_val is not None and not pd.isna(hc_y_val)) else None,
+                        'bbType': str(bb_type_val) if (bb_type_val is not None and not pd.isna(bb_type_val)) else None,
+                        'hitDistance': safe_float(hit_dist_val) if (hit_dist_val is not None and not pd.isna(hit_dist_val)) else None,
                     }
                     pitches.append(pitch)
                 break  # Got data, no need to try next year
@@ -183,6 +193,10 @@ def generate_typescript(all_pitches, batter_info, output_path):
     lines.append("  game: string;")
     lines.append("  launchSpeed: number | null;")
     lines.append("  launchAngle: number | null;")
+    lines.append("  hcX: number | null;")
+    lines.append("  hcY: number | null;")
+    lines.append("  bbType: string | null;")
+    lines.append("  hitDistance: number | null;")
     lines.append("}")
     lines.append("")
     lines.append("export interface DomBatter {")
@@ -209,6 +223,10 @@ def generate_typescript(all_pitches, batter_info, output_path):
         pitcher = p['pitcher'].replace('"', '\\"')
         ls = f'{p["launchSpeed"]}' if p['launchSpeed'] is not None else 'null'
         la = f'{p["launchAngle"]}' if p['launchAngle'] is not None else 'null'
+        hx = f'{p["hcX"]}' if p['hcX'] is not None else 'null'
+        hy = f'{p["hcY"]}' if p['hcY'] is not None else 'null'
+        bt = f'"{p["bbType"]}"' if p['bbType'] is not None else 'null'
+        hd = f'{p["hitDistance"]}' if p['hitDistance'] is not None else 'null'
         line = (
             f'  {{ batter: "{batter}", batterId: {p["batterId"]}, batSide: "{p["batSide"]}", '
             f'pitcher: "{pitcher}", pitcherHand: "{p["pitcherHand"]}", '
@@ -217,7 +235,8 @@ def generate_typescript(all_pitches, batter_info, output_path):
             f'speed: {p["speed"]}, balls: {p["balls"]}, strikes: {p["strikes"]}, '
             f'callDesc: "{p["callDesc"]}", callCode: "{p["callCode"]}", '
             f'abResult: "{p["abResult"]}", game: "{p["game"]}", '
-            f'launchSpeed: {ls}, launchAngle: {la} }},'
+            f'launchSpeed: {ls}, launchAngle: {la}, '
+            f'hcX: {hx}, hcY: {hy}, bbType: {bt}, hitDistance: {hd} }},'
         )
         lines.append(line)
     lines.append("];")

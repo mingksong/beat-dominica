@@ -8,6 +8,7 @@ import HotColdZone from './components/HotColdZone';
 import PitchTypePerformance from './components/PitchTypePerformance';
 import PlateDiscipline from './components/PlateDiscipline';
 import ScoutingInsights from './components/ScoutingInsights';
+import SprayChart from './components/SprayChart';
 
 export default function App() {
   const defaultBatter = DOM_BATTERS.length > 0 ? DOM_BATTERS[0].name : null;
@@ -29,26 +30,26 @@ export default function App() {
   const totalPitches = DOM_PITCHES.length;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-white text-gray-900">
       {/* Header */}
-      <header className="bg-gradient-to-r from-red-950/40 via-slate-900 to-blue-950/40 border-b border-slate-700/50">
+      <header className="bg-gradient-to-r from-red-50 via-white to-blue-50 border-b border-gray-300">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center gap-3 mb-1">
             <span className="text-2xl">&#x1F1E9;&#x1F1F4;</span>
             <div>
-              <h1 className="text-xl font-bold text-white tracking-tight">
+              <h1 className="text-xl font-bold text-gray-900 tracking-tight">
                 Team Dominicana Report
               </h1>
-              <p className="text-[10px] text-slate-500">
+              <p className="text-[10px] text-gray-400">
                 WBC 2026 | Dominican Republic Batters Scouting
               </p>
             </div>
             <div className="ml-auto text-right">
               <span className="text-sm font-bold text-red-400">vs 🇰🇷 Korea</span>
-              <p className="text-[10px] text-slate-500">투수 시점 분석</p>
+              <p className="text-[10px] text-gray-400">투수 시점 분석</p>
             </div>
           </div>
-          <div className="flex gap-4 ml-11 text-[10px] text-slate-400">
+          <div className="flex gap-4 ml-11 text-[10px] text-gray-500">
             <span>{totalBatters}명 타자</span>
             <span>|</span>
             <span>총 {totalPitches.toLocaleString()}구 분석</span>
@@ -66,14 +67,14 @@ export default function App() {
 
         {/* Batter Profile Card */}
         {batterInfo && (
-          <div className="text-center bg-slate-800/30 rounded-lg p-3 border border-slate-700/50">
-            <h2 className="text-lg font-semibold text-white">
+          <div className="text-center bg-gray-50 rounded-lg p-3 border border-gray-300">
+            <h2 className="text-lg font-semibold text-gray-900">
               {batterInfo.name}
-              <span className="text-sm text-slate-400 ml-2">
+              <span className="text-sm text-gray-500 ml-2">
                 ({batterInfo.batSide === 'S' ? '양타' : batterInfo.batSide === 'L' ? '좌타' : '우타'})
               </span>
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-gray-400 mt-0.5">
               {batterInfo.position} | {batterInfo.pitchCount.toLocaleString()}구 데이터
             </p>
           </div>
@@ -82,8 +83,8 @@ export default function App() {
         {filteredPitches.length === 0 ? (
           <div className="text-center py-20">
             <div className="text-4xl mb-4">&#x26BE;</div>
-            <p className="text-slate-400 text-sm">데이터를 로딩 중입니다...</p>
-            <p className="text-slate-600 text-xs mt-1">
+            <p className="text-gray-500 text-sm">데이터를 로딩 중입니다...</p>
+            <p className="text-gray-500 text-xs mt-1">
               scripts/fetch_dom_batters.py 실행 후 새로고침하세요
             </p>
           </div>
@@ -97,6 +98,11 @@ export default function App() {
             {/* Pitch Location Charts - 3 panels */}
             <section>
               <PitchLocationChart pitches={filteredPitches} />
+            </section>
+
+            {/* Spray Chart */}
+            <section>
+              <SprayChart pitches={filteredPitches} />
             </section>
 
             {/* Pitch Legend */}
@@ -127,7 +133,7 @@ export default function App() {
         )}
 
         {/* Footer */}
-        <footer className="text-center text-[10px] text-slate-600 py-4 border-t border-slate-800">
+        <footer className="text-center text-[10px] text-gray-500 py-4 border-t border-gray-200">
           <p>Data: MLB Statcast (Baseball Savant) | 투수 시점 (Pitcher&apos;s Perspective)</p>
           <p className="mt-1">모든 차트의 좌우는 원본 데이터를 반전하여 투수가 마운드에서 바라보는 시점입니다</p>
         </footer>

@@ -63,38 +63,38 @@ export default function HotColdZone({ pitches }: { pitches: DomPitch[] }) {
   const colLabels = ['L', 'MID', 'R'];
 
   return (
-    <div className="bg-slate-800/30 rounded-xl p-4 border border-slate-700/50">
-      <h3 className="text-sm font-semibold text-slate-200 mb-4">
+    <div className="bg-gray-50 rounded-xl p-4 border border-gray-300">
+      <h3 className="text-sm font-semibold text-gray-800 mb-4">
         핫/콜드 존 분석
-        <span className="text-slate-500 font-normal ml-2">(투수 시점)</span>
+        <span className="text-gray-400 font-normal ml-2">(투수 시점)</span>
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Swing Rate Heatmap */}
         <div>
-          <h4 className="text-xs text-slate-400 font-medium mb-2 text-center">스윙 확률</h4>
+          <h4 className="text-xs text-gray-500 font-medium mb-2 text-center">스윙 확률</h4>
           <div className="flex justify-center">
             <div className="inline-block">
               <div className="flex">
                 <div className="w-14" />
                 {colLabels.map(l => (
-                  <div key={l} className="w-[72px] text-center text-[10px] text-slate-500 font-medium pb-1">{l}</div>
+                  <div key={l} className="w-[72px] text-center text-[10px] text-gray-400 font-medium pb-1">{l}</div>
                 ))}
               </div>
               {grid.map((row, ri) => (
                 <div key={ri} className="flex items-center">
-                  <div className="w-14 text-right pr-2 text-[10px] text-slate-500 font-medium">{rowLabels[ri]}</div>
+                  <div className="w-14 text-right pr-2 text-[10px] text-gray-400 font-medium">{rowLabels[ri]}</div>
                   {row.map((zone, ci) => {
                     const swingRate = zone.total > 0 ? zone.swings / zone.total : 0;
                     const opacity = zone.total > 0 ? 0.15 + swingRate * 0.85 : 0.05;
                     return (
                       <div
                         key={ci}
-                        className="w-[72px] h-16 flex flex-col items-center justify-center border border-slate-700/50 rounded"
+                        className="w-[72px] h-16 flex flex-col items-center justify-center border border-gray-300 rounded"
                         style={{ backgroundColor: `rgba(251, 191, 36, ${opacity})` }}
                       >
-                        <span className="text-sm font-bold text-white">{(swingRate * 100).toFixed(0)}%</span>
-                        <span className="text-[9px] text-slate-300">{zone.swings}/{zone.total}</span>
+                        <span className="text-sm font-bold text-gray-900">{(swingRate * 100).toFixed(0)}%</span>
+                        <span className="text-[9px] text-gray-700">{zone.swings}/{zone.total}</span>
                       </div>
                     );
                   })}
@@ -106,35 +106,35 @@ export default function HotColdZone({ pitches }: { pitches: DomPitch[] }) {
 
         {/* Whiff Rate Heatmap (swings that miss) */}
         <div>
-          <h4 className="text-xs text-slate-400 font-medium mb-2 text-center">헛스윙률 (Whiff%)</h4>
+          <h4 className="text-xs text-gray-500 font-medium mb-2 text-center">헛스윙률 (Whiff%)</h4>
           <div className="flex justify-center">
             <div className="inline-block">
               <div className="flex">
                 <div className="w-14" />
                 {colLabels.map(l => (
-                  <div key={l} className="w-[72px] text-center text-[10px] text-slate-500 font-medium pb-1">{l}</div>
+                  <div key={l} className="w-[72px] text-center text-[10px] text-gray-400 font-medium pb-1">{l}</div>
                 ))}
               </div>
               {grid.map((row, ri) => (
                 <div key={ri} className="flex items-center">
-                  <div className="w-14 text-right pr-2 text-[10px] text-slate-500 font-medium">{rowLabels[ri]}</div>
+                  <div className="w-14 text-right pr-2 text-[10px] text-gray-400 font-medium">{rowLabels[ri]}</div>
                   {row.map((zone, ci) => {
                     const whiffRate = zone.swings > 0 ? zone.whiffs / zone.swings : 0;
                     // Red = high whiff (good for pitcher), Blue = low whiff (bad for pitcher)
                     const r = Math.round(34 + whiffRate * 221);
                     const g = Math.round(197 - whiffRate * 152);
                     const b = Math.round(94 - whiffRate * 49);
-                    const color = zone.swings >= 5 ? `rgb(${r}, ${g}, ${b})` : '#1e293b';
+                    const color = zone.swings >= 5 ? `rgb(${r}, ${g}, ${b})` : '#f1f5f9';
                     return (
                       <div
                         key={ci}
-                        className="w-[72px] h-16 flex flex-col items-center justify-center border border-slate-700/50 rounded"
+                        className="w-[72px] h-16 flex flex-col items-center justify-center border border-gray-300 rounded"
                         style={{ backgroundColor: color }}
                       >
-                        <span className="text-sm font-bold text-white">
+                        <span className="text-sm font-bold text-gray-900">
                           {zone.swings >= 5 ? `${(whiffRate * 100).toFixed(0)}%` : '-'}
                         </span>
-                        <span className="text-[9px] text-slate-300">
+                        <span className="text-[9px] text-gray-700">
                           {zone.swings >= 5 ? `${zone.whiffs}/${zone.swings}` : `n=${zone.swings}`}
                         </span>
                       </div>
@@ -145,11 +145,11 @@ export default function HotColdZone({ pitches }: { pitches: DomPitch[] }) {
             </div>
           </div>
           <div className="flex justify-center gap-4 mt-2">
-            <span className="text-[9px] text-slate-500 flex items-center gap-1">
+            <span className="text-[9px] text-gray-400 flex items-center gap-1">
               <span className="w-3 h-3 rounded" style={{ backgroundColor: 'rgb(34, 197, 94)' }} />
               낮음 (타자 유리)
             </span>
-            <span className="text-[9px] text-slate-500 flex items-center gap-1">
+            <span className="text-[9px] text-gray-400 flex items-center gap-1">
               <span className="w-3 h-3 rounded" style={{ backgroundColor: 'rgb(255, 45, 45)' }} />
               높음 (투수 유리)
             </span>
@@ -158,18 +158,18 @@ export default function HotColdZone({ pitches }: { pitches: DomPitch[] }) {
 
         {/* Hit Rate Heatmap */}
         <div>
-          <h4 className="text-xs text-slate-400 font-medium mb-2 text-center">안타 확률 (인플레이 중)</h4>
+          <h4 className="text-xs text-gray-500 font-medium mb-2 text-center">안타 확률 (인플레이 중)</h4>
           <div className="flex justify-center">
             <div className="inline-block">
               <div className="flex">
                 <div className="w-14" />
                 {colLabels.map(l => (
-                  <div key={l} className="w-[72px] text-center text-[10px] text-slate-500 font-medium pb-1">{l}</div>
+                  <div key={l} className="w-[72px] text-center text-[10px] text-gray-400 font-medium pb-1">{l}</div>
                 ))}
               </div>
               {grid.map((row, ri) => (
                 <div key={ri} className="flex items-center">
-                  <div className="w-14 text-right pr-2 text-[10px] text-slate-500 font-medium">{rowLabels[ri]}</div>
+                  <div className="w-14 text-right pr-2 text-[10px] text-gray-400 font-medium">{rowLabels[ri]}</div>
                   {row.map((zone, ci) => {
                     const hitRate = zone.inPlay > 0 ? zone.hits / zone.inPlay : 0;
                     // Blue = low hit rate (good for pitcher), Red = high hit rate (bad for pitcher)
@@ -180,13 +180,13 @@ export default function HotColdZone({ pitches }: { pitches: DomPitch[] }) {
                     return (
                       <div
                         key={ci}
-                        className="w-[72px] h-16 flex flex-col items-center justify-center border border-slate-700/50 rounded"
+                        className="w-[72px] h-16 flex flex-col items-center justify-center border border-gray-300 rounded"
                         style={{ backgroundColor: bgColor }}
                       >
-                        <span className="text-sm font-bold text-white">
+                        <span className="text-sm font-bold text-gray-900">
                           {zone.inPlay >= 3 ? `.${(hitRate * 1000).toFixed(0).padStart(3, '0')}` : '-'}
                         </span>
-                        <span className="text-[9px] text-slate-300">
+                        <span className="text-[9px] text-gray-700">
                           {zone.inPlay >= 3 ? `${zone.hits}/${zone.inPlay}` : `n=${zone.inPlay}`}
                         </span>
                       </div>
@@ -200,31 +200,31 @@ export default function HotColdZone({ pitches }: { pitches: DomPitch[] }) {
 
         {/* Pitch Count Heatmap */}
         <div>
-          <h4 className="text-xs text-slate-400 font-medium mb-2 text-center">피치 분포</h4>
+          <h4 className="text-xs text-gray-500 font-medium mb-2 text-center">피치 분포</h4>
           <div className="flex justify-center">
             <div className="inline-block">
               <div className="flex">
                 <div className="w-14" />
                 {colLabels.map(l => (
-                  <div key={l} className="w-[72px] text-center text-[10px] text-slate-500 font-medium pb-1">{l}</div>
+                  <div key={l} className="w-[72px] text-center text-[10px] text-gray-400 font-medium pb-1">{l}</div>
                 ))}
               </div>
               {grid.map((row, ri) => {
                 const maxTotal = Math.max(...grid.flat().map(z => z.total), 1);
                 return (
                   <div key={ri} className="flex items-center">
-                    <div className="w-14 text-right pr-2 text-[10px] text-slate-500 font-medium">{rowLabels[ri]}</div>
+                    <div className="w-14 text-right pr-2 text-[10px] text-gray-400 font-medium">{rowLabels[ri]}</div>
                     {row.map((zone, ci) => {
                       const opacity = zone.total > 0 ? 0.15 + (zone.total / maxTotal) * 0.85 : 0.05;
                       const pct = pitches.length > 0 ? ((zone.total / pitches.length) * 100).toFixed(0) : '0';
                       return (
                         <div
                           key={ci}
-                          className="w-[72px] h-16 flex flex-col items-center justify-center border border-slate-700/50 rounded"
+                          className="w-[72px] h-16 flex flex-col items-center justify-center border border-gray-300 rounded"
                           style={{ backgroundColor: `rgba(96, 165, 250, ${opacity})` }}
                         >
-                          <span className="text-sm font-bold text-white">{zone.total}</span>
-                          <span className="text-[9px] text-slate-300">{pct}%</span>
+                          <span className="text-sm font-bold text-gray-900">{zone.total}</span>
+                          <span className="text-[9px] text-gray-700">{pct}%</span>
                         </div>
                       );
                     })}

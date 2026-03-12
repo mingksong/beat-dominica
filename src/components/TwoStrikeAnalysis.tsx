@@ -26,7 +26,7 @@ function toSvgY(pZ: number): number {
 
 function ZoneHeatmap({ pitches }: { pitches: DomPitch[] }) {
   const total = pitches.length;
-  if (total === 0) return <div className="text-sm text-slate-500">데이터 없음</div>;
+  if (total === 0) return <div className="text-sm text-gray-400">데이터 없음</div>;
 
   const avgSzTop = pitches.reduce((s, p) => s + p.szTop, 0) / total;
   const avgSzBot = pitches.reduce((s, p) => s + p.szBot, 0) / total;
@@ -56,19 +56,19 @@ function ZoneHeatmap({ pitches }: { pitches: DomPitch[] }) {
 
   return (
     <div>
-      <h4 className="text-xs text-slate-400 font-medium mb-2">코스 히트맵 (3x3)</h4>
+      <h4 className="text-xs text-gray-500 font-medium mb-2">코스 히트맵 (3x3)</h4>
       <div className="inline-block">
         <div className="flex">
           <div className="w-14" />
           {colLabels.map(label => (
-            <div key={label} className="w-16 text-center text-[10px] text-slate-500 font-medium pb-1">
+            <div key={label} className="w-16 text-center text-[10px] text-gray-400 font-medium pb-1">
               {label}
             </div>
           ))}
         </div>
         {grid.map((row, ri) => (
           <div key={ri} className="flex items-center">
-            <div className="w-14 text-right pr-2 text-[10px] text-slate-500 font-medium">
+            <div className="w-14 text-right pr-2 text-[10px] text-gray-400 font-medium">
               {rowLabels[ri]}
             </div>
             {row.map((count, ci) => {
@@ -77,11 +77,11 @@ function ZoneHeatmap({ pitches }: { pitches: DomPitch[] }) {
               return (
                 <div
                   key={ci}
-                  className="w-16 h-14 flex flex-col items-center justify-center border border-slate-700/50 rounded"
+                  className="w-16 h-14 flex flex-col items-center justify-center border border-gray-300 rounded"
                   style={{ backgroundColor: `rgba(239, 68, 68, ${opacity})` }}
                 >
-                  <span className="text-base font-bold text-white">{count}</span>
-                  <span className="text-[9px] text-slate-300">{pct}%</span>
+                  <span className="text-base font-bold text-gray-900">{count}</span>
+                  <span className="text-[9px] text-gray-700">{pct}%</span>
                 </div>
               );
             })}
@@ -104,16 +104,16 @@ function PitchTypeDistribution({ pitches }: { pitches: DomPitch[] }) {
 
   return (
     <div>
-      <h4 className="text-xs text-slate-400 font-medium mb-2">2S 이후 상대 구종</h4>
+      <h4 className="text-xs text-gray-500 font-medium mb-2">2S 이후 상대 구종</h4>
       <div className="space-y-1.5">
         {sorted.map(([code, count]) => {
           const pct = (count / total) * 100;
           return (
             <div key={code} className="flex items-center gap-2">
-              <span className="text-xs text-slate-300 w-16">
+              <span className="text-xs text-gray-700 w-16">
                 {PITCH_NAMES_KR[code] ?? code}
               </span>
-              <div className="flex-1 h-5 bg-slate-900 rounded overflow-hidden">
+              <div className="flex-1 h-5 bg-gray-100 rounded overflow-hidden">
                 <div
                   className="h-full rounded flex items-center pl-2"
                   style={{
@@ -121,12 +121,12 @@ function PitchTypeDistribution({ pitches }: { pitches: DomPitch[] }) {
                     backgroundColor: PITCH_COLORS[code] ?? '#6b7280',
                   }}
                 >
-                  <span className="text-[10px] font-bold text-white drop-shadow">
+                  <span className="text-[10px] font-bold text-gray-900 drop-shadow">
                     {pct.toFixed(0)}%
                   </span>
                 </div>
               </div>
-              <span className="text-[10px] text-slate-500 w-6 text-right">{count}</span>
+              <span className="text-[10px] text-gray-400 w-6 text-right">{count}</span>
             </div>
           );
         })}
@@ -168,14 +168,14 @@ function PutawayResults({ pitches }: { pitches: DomPitch[] }) {
 
   return (
     <div>
-      <h4 className="text-xs text-slate-400 font-medium mb-2">2S 이후 결과</h4>
+      <h4 className="text-xs text-gray-500 font-medium mb-2">2S 이후 결과</h4>
       <div className="space-y-1">
         {stats.map(({ label, count, color }) => (
           <div key={label} className="flex items-center justify-between">
-            <span className="text-xs text-slate-300">{label}</span>
+            <span className="text-xs text-gray-700">{label}</span>
             <div className="flex items-center gap-2">
               <span className="text-sm font-bold" style={{ color }}>{count}</span>
-              <span className="text-[10px] text-slate-500">
+              <span className="text-[10px] text-gray-400">
                 ({abTotal > 0 ? ((count / abTotal) * 100).toFixed(0) : 0}%)
               </span>
             </div>
@@ -199,25 +199,25 @@ function TwoStrikePitchMap({ pitches }: { pitches: DomPitch[] }) {
 
   return (
     <div className="flex flex-col items-center">
-      <h4 className="text-xs text-slate-400 font-medium mb-1">2스트라이크 피치맵</h4>
+      <h4 className="text-xs text-gray-500 font-medium mb-1">2스트라이크 피치맵</h4>
       <svg width={SVG_W} height={SVG_H} className="rounded-lg">
-        <rect x={0} y={0} width={SVG_W} height={SVG_H} fill="#0f172a" rx={8} />
+        <rect x={0} y={0} width={SVG_W} height={SVG_H} fill="#f8fafc" rx={8} />
         <rect
           x={szLeft} y={szTopY}
           width={szRight - szLeft} height={szBotY - szTopY}
-          fill="none" stroke="#475569" strokeWidth={2}
+          fill="none" stroke="#94a3b8" strokeWidth={2}
         />
         {[1, 2].map(i => (
           <g key={`grid-${i}`}>
             <line
               x1={szLeft + (szRight - szLeft) * i / 3} y1={szTopY}
               x2={szLeft + (szRight - szLeft) * i / 3} y2={szBotY}
-              stroke="#334155" strokeWidth={1} strokeDasharray="3,3"
+              stroke="#cbd5e1" strokeWidth={1} strokeDasharray="3,3"
             />
             <line
               x1={szLeft} y1={szTopY + (szBotY - szTopY) * i / 3}
               x2={szRight} y2={szTopY + (szBotY - szTopY) * i / 3}
-              stroke="#334155" strokeWidth={1} strokeDasharray="3,3"
+              stroke="#cbd5e1" strokeWidth={1} strokeDasharray="3,3"
             />
           </g>
         ))}
@@ -231,11 +231,11 @@ function TwoStrikePitchMap({ pitches }: { pitches: DomPitch[] }) {
             opacity={0.9}
           />
         ))}
-        <text x={SVG_W / 2} y={SVG_H - 8} textAnchor="middle" fill="#64748b" fontSize={10}>
+        <text x={SVG_W / 2} y={SVG_H - 8} textAnchor="middle" fill="#9ca3af" fontSize={10}>
           투수 시점 (Pitcher&apos;s View)
         </text>
       </svg>
-      <span className="text-[10px] text-slate-500 mt-1">{pitches.length} pitches</span>
+      <span className="text-[10px] text-gray-400 mt-1">{pitches.length} pitches</span>
     </div>
   );
 }
@@ -255,22 +255,22 @@ export default function TwoStrikeAnalysis({ pitches }: { pitches: DomPitch[] }) 
 
   if (twoStrikePitches.length === 0) {
     return (
-      <div className="text-center text-slate-500 text-sm py-4">
+      <div className="text-center text-gray-400 text-sm py-4">
         2스트라이크 데이터 없음
       </div>
     );
   }
 
   return (
-    <div className="bg-slate-800/30 rounded-xl p-4 border border-slate-700/50">
+    <div className="bg-gray-50 rounded-xl p-4 border border-gray-300">
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <h3 className="text-sm font-semibold text-slate-200">
+        <h3 className="text-sm font-semibold text-gray-800">
           2스트라이크 이후 분석
-          <span className="text-slate-500 font-normal ml-2">
+          <span className="text-gray-400 font-normal ml-2">
             ({filtered.length}구 / 전체 {pitches.length}구)
           </span>
         </h3>
-        <div className="flex rounded-lg overflow-hidden border border-slate-700">
+        <div className="flex rounded-lg overflow-hidden border border-gray-300">
           {HAND_TABS.map(tab => {
             const count = tab.value === 'ALL'
               ? twoStrikePitches.length
@@ -283,11 +283,11 @@ export default function TwoStrikeAnalysis({ pitches }: { pitches: DomPitch[] }) 
                 className={`px-3 py-1 text-xs font-medium transition-colors ${
                   isActive
                     ? 'bg-blue-600 text-white'
-                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                    : 'bg-gray-200 text-gray-500 hover:bg-gray-300'
                 }`}
               >
                 {tab.label}
-                <span className={`ml-1 text-[10px] ${isActive ? 'text-blue-200' : 'text-slate-500'}`}>
+                <span className={`ml-1 text-[10px] ${isActive ? 'text-blue-200' : 'text-gray-400'}`}>
                   {count}
                 </span>
               </button>
@@ -296,7 +296,7 @@ export default function TwoStrikeAnalysis({ pitches }: { pitches: DomPitch[] }) 
         </div>
       </div>
       {filtered.length === 0 ? (
-        <div className="text-center text-slate-500 text-sm py-4">해당 조건의 데이터 없음</div>
+        <div className="text-center text-gray-400 text-sm py-4">해당 조건의 데이터 없음</div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="flex justify-center">
