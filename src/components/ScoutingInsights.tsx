@@ -78,7 +78,7 @@ function generateInsights(pitches: DomPitch[], batterInfo: DomBatter | null): In
       title: '높은 체이스율',
       detail: `존 밖 스윙률 ${chasePct.toFixed(0)}% — 볼 배합으로 유인 가능`,
     });
-  } else if (chasePct <= 22) {
+  } else if (chasePct <= 23) {
     insights.push({
       type: 'caution',
       title: '매우 선구안 좋음',
