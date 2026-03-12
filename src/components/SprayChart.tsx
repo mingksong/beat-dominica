@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { DomPitch } from '../data/domBatterData';
 
-type PitcherHandFilter = 'all' | 'L' | 'R';
 type BbTypeFilter = 'all' | 'fly_ball' | 'line_drive' | 'ground_ball';
 
 const BB_TYPE_LABELS: Record<BbTypeFilter, string> = {
@@ -9,12 +8,6 @@ const BB_TYPE_LABELS: Record<BbTypeFilter, string> = {
   fly_ball: '뜬공',
   line_drive: '라인드라이브',
   ground_ball: '땅볼',
-};
-
-const PITCHER_HAND_LABELS: Record<PitcherHandFilter, string> = {
-  all: '전체',
-  L: 'vs 좌투',
-  R: 'vs 우투',
 };
 
 function getDotColor(abResult: string): string {
@@ -25,10 +18,10 @@ function getDotColor(abResult: string): string {
   return '#9ca3af';
 }
 
-// Uniform scale: 400ft (center field) → 250 SVG units
-const SCALE = 250 / 400; // 0.625 SVG units per foot
+// Uniform scale: 400ft → 250 SVG units
+const SCALE = 250 / 400;
 const HOME = { x: 150, y: 280 };
-// Polar coords from home plate: 0° = center field, -45° = LF line, +45° = RF line
+
 function polar(distFt: number, angleDeg: number) {
   const rad = (angleDeg * Math.PI) / 180;
   return {
@@ -37,181 +30,142 @@ function polar(distFt: number, angleDeg: number) {
   };
 }
 
-function toSvgCoords(hcX: number, hcY: number): { x: number; y: number } {
+function toSvgCoords(hcX: number, hcY: number) {
   const xFeet = 2.5 * (hcX - 125.42);
   const yFeet = 2.5 * (198.27 - hcY);
-  return {
-    x: HOME.x + xFeet * SCALE,
-    y: HOME.y - yFeet * SCALE,
-  };
+  return { x: HOME.x + xFeet * SCALE, y: HOME.y - yFeet * SCALE };
 }
 
 function BaseballField() {
-  // Diamond bases (90ft sides at 45° angles)
   const first = polar(90, 45);
-  const second = polar(90 * Math.SQRT2, 0); // 127.3ft straight up
+  const second = polar(90 * Math.SQRT2, 0);
   const third = polar(90, -45);
 
-  // Outfield fence endpoints on foul lines (330ft) and center (400ft)
   const lf = polar(330, -45);
   const cf = polar(400, 0);
   const rf = polar(330, 45);
 
-  // Infield grass arc: 95ft radius circle centered at home, from 3B line to 1B line
-  const infR = 95 * SCALE; // ~59.4 SVG units
-  const infStart = polar(95, -45);
-  const infEnd = polar(95, 45);
+  // Infield grass boundary: Bezier arc that passes BEYOND 2B
+  // Real infield arc is ~95ft from pitching rubber (60.5ft from home)
+  // So arc peak ≈ 155ft from home, well past 2B at 127ft
+  const infStart = polar(100, -48);
+  const infEnd = polar(100, 48);
+  const infControl = polar(160, 0); // control point past 2B
 
-  // Pitching mound: 60.5ft from home
   const mound = polar(60.5, 0);
 
   return (
     <g>
-      {/* Outfield grass fill — foul lines + fence arc */}
       <path
         d={`M ${HOME.x} ${HOME.y} L ${lf.x} ${lf.y} Q ${cf.x} ${cf.y - 8} ${rf.x} ${rf.y} Z`}
-        fill="#d1fae5"
-        opacity="0.4"
+        fill="#d1fae5" opacity="0.4"
       />
-
-      {/* Outfield fence arc */}
       <path
         d={`M ${lf.x} ${lf.y} Q ${cf.x} ${cf.y - 8} ${rf.x} ${rf.y}`}
-        fill="none"
-        stroke="#94a3b8"
-        strokeWidth="2"
+        fill="none" stroke="#94a3b8" strokeWidth="1.5"
       />
-
-      {/* Foul lines (home → LF/RF fence) */}
-      <line x1={HOME.x} y1={HOME.y} x2={lf.x} y2={lf.y} stroke="#cbd5e1" strokeWidth="1.5" />
-      <line x1={HOME.x} y1={HOME.y} x2={rf.x} y2={rf.y} stroke="#cbd5e1" strokeWidth="1.5" />
-
-      {/* Infield dirt diamond */}
+      <line x1={HOME.x} y1={HOME.y} x2={lf.x} y2={lf.y} stroke="#cbd5e1" strokeWidth="1" />
+      <line x1={HOME.x} y1={HOME.y} x2={rf.x} y2={rf.y} stroke="#cbd5e1" strokeWidth="1" />
       <path
         d={`M ${HOME.x} ${HOME.y} L ${first.x} ${first.y} L ${second.x} ${second.y} L ${third.x} ${third.y} Z`}
-        fill="#fef3c7"
-        opacity="0.4"
+        fill="#fef3c7" opacity="0.35"
       />
-
-      {/* Infield grass arc (95ft from home, curves outward toward 2B) */}
+      {/* Infield grass arc — Bezier curving past 2B */}
       <path
-        d={`M ${infStart.x} ${infStart.y} A ${infR} ${infR} 0 0 1 ${infEnd.x} ${infEnd.y}`}
-        fill="none"
-        stroke="#cbd5e1"
-        strokeWidth="1"
-        strokeDasharray="4,2"
+        d={`M ${infStart.x} ${infStart.y} Q ${infControl.x} ${infControl.y} ${infEnd.x} ${infEnd.y}`}
+        fill="none" stroke="#cbd5e1" strokeWidth="1" strokeDasharray="3,2"
       />
-
-      {/* Base path lines */}
-      <line x1={HOME.x} y1={HOME.y} x2={first.x} y2={first.y} stroke="#94a3b8" strokeWidth="1.5" />
-      <line x1={first.x} y1={first.y} x2={second.x} y2={second.y} stroke="#94a3b8" strokeWidth="1.5" />
-      <line x1={second.x} y1={second.y} x2={third.x} y2={third.y} stroke="#94a3b8" strokeWidth="1.5" />
-      <line x1={third.x} y1={third.y} x2={HOME.x} y2={HOME.y} stroke="#94a3b8" strokeWidth="1.5" />
-
-      {/* Bases */}
-      <rect x={first.x - 3} y={first.y - 3} width="6" height="6" fill="white" stroke="#94a3b8" strokeWidth="1" transform={`rotate(45 ${first.x} ${first.y})`} />
-      <rect x={second.x - 3} y={second.y - 3} width="6" height="6" fill="white" stroke="#94a3b8" strokeWidth="1" transform={`rotate(45 ${second.x} ${second.y})`} />
-      <rect x={third.x - 3} y={third.y - 3} width="6" height="6" fill="white" stroke="#94a3b8" strokeWidth="1" transform={`rotate(45 ${third.x} ${third.y})`} />
-
-      {/* Home plate pentagon */}
+      <line x1={HOME.x} y1={HOME.y} x2={first.x} y2={first.y} stroke="#94a3b8" strokeWidth="1" />
+      <line x1={first.x} y1={first.y} x2={second.x} y2={second.y} stroke="#94a3b8" strokeWidth="1" />
+      <line x1={second.x} y1={second.y} x2={third.x} y2={third.y} stroke="#94a3b8" strokeWidth="1" />
+      <line x1={third.x} y1={third.y} x2={HOME.x} y2={HOME.y} stroke="#94a3b8" strokeWidth="1" />
+      <rect x={first.x - 2.5} y={first.y - 2.5} width="5" height="5" fill="white" stroke="#94a3b8" strokeWidth="0.8" transform={`rotate(45 ${first.x} ${first.y})`} />
+      <rect x={second.x - 2.5} y={second.y - 2.5} width="5" height="5" fill="white" stroke="#94a3b8" strokeWidth="0.8" transform={`rotate(45 ${second.x} ${second.y})`} />
+      <rect x={third.x - 2.5} y={third.y - 2.5} width="5" height="5" fill="white" stroke="#94a3b8" strokeWidth="0.8" transform={`rotate(45 ${third.x} ${third.y})`} />
       <polygon
-        points={`${HOME.x},${HOME.y - 5} ${HOME.x + 4},${HOME.y - 2} ${HOME.x + 4},${HOME.y + 2} ${HOME.x - 4},${HOME.y + 2} ${HOME.x - 4},${HOME.y - 2}`}
-        fill="white"
-        stroke="#94a3b8"
-        strokeWidth="1"
+        points={`${HOME.x},${HOME.y - 4} ${HOME.x + 3},${HOME.y - 1.5} ${HOME.x + 3},${HOME.y + 1.5} ${HOME.x - 3},${HOME.y + 1.5} ${HOME.x - 3},${HOME.y - 1.5}`}
+        fill="white" stroke="#94a3b8" strokeWidth="0.8"
       />
-
-      {/* Pitching mound */}
-      <circle cx={mound.x} cy={mound.y} r="3" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="1" />
+      <circle cx={mound.x} cy={mound.y} r="2.5" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="0.8" />
     </g>
   );
 }
 
-export default function SprayChart({ pitches }: { pitches: DomPitch[] }) {
-  const [pitcherHand, setPitcherHand] = useState<PitcherHandFilter>('all');
-  const [bbType, setBbType] = useState<BbTypeFilter>('all');
-
-  const battedBalls = pitches.filter(
-    (p) => p.hcX !== null && p.hcY !== null && p.callDesc.includes('In play')
-  );
-
-  const filtered = battedBalls.filter((p) => {
-    if (pitcherHand !== 'all' && p.pitcherHand !== pitcherHand) return false;
-    if (bbType !== 'all' && p.bbType !== bbType) return false;
-    return true;
-  });
-
-  const hitCount = filtered.filter((p) =>
+function SprayChartPanel({ pitches, title }: { pitches: DomPitch[]; title: string }) {
+  const hitCount = pitches.filter(p =>
     ['Single', 'Double', 'Triple', 'Home Run'].includes(p.abResult)
   ).length;
 
   return (
-    <div className="bg-gray-50 rounded-xl p-4 border border-gray-300">
-      <h3 className="text-base font-bold text-gray-800 mb-3">타구 분포 (Spray Chart)</h3>
+    <div className="flex flex-col items-center">
+      <span className="text-xs text-gray-500 mb-1 font-medium">{title}</span>
+      <svg viewBox="0 0 300 300" width={240} height={240}
+        style={{ background: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0' }}
+      >
+        <BaseballField />
+        {pitches.map((p, i) => {
+          const { x, y } = toSvgCoords(p.hcX!, p.hcY!);
+          const color = getDotColor(p.abResult);
+          const isHit = ['Single', 'Double', 'Triple', 'Home Run'].includes(p.abResult);
+          return (
+            <circle key={i} cx={x} cy={y} r={isHit ? 4.5 : 3.5}
+              fill={color} opacity={0.75} stroke="white" strokeWidth="0.5"
+            >
+              <title>{`${p.abResult}${p.hitDistance ? ` (${p.hitDistance}ft)` : ''}`}</title>
+            </circle>
+          );
+        })}
+      </svg>
+      <span className="text-[10px] text-gray-400 mt-1">
+        {pitches.length}개 타구 · 안타 {hitCount}
+      </span>
+    </div>
+  );
+}
 
-      {/* Pitcher hand filter */}
-      <div className="flex gap-1 mb-2">
-        {(Object.keys(PITCHER_HAND_LABELS) as PitcherHandFilter[]).map((key) => (
-          <button
-            key={key}
-            onClick={() => setPitcherHand(key)}
-            className={`px-3 py-1 text-xs rounded-full border transition-colors ${
-              pitcherHand === key
-                ? 'bg-blue-600 text-white border-blue-600'
-                : 'bg-gray-200 border-gray-300 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            {PITCHER_HAND_LABELS[key]}
-          </button>
-        ))}
-      </div>
+export default function SprayChart({ pitches }: { pitches: DomPitch[] }) {
+  const [bbType, setBbType] = useState<BbTypeFilter>('all');
 
-      {/* Batted ball type filter */}
-      <div className="flex gap-1 mb-3 flex-wrap">
-        {(Object.keys(BB_TYPE_LABELS) as BbTypeFilter[]).map((key) => (
-          <button
-            key={key}
-            onClick={() => setBbType(key)}
-            className={`px-3 py-1 text-xs rounded-full border transition-colors ${
-              bbType === key
-                ? 'bg-blue-600 text-white border-blue-600'
-                : 'bg-gray-200 border-gray-300 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            {BB_TYPE_LABELS[key]}
-          </button>
-        ))}
-      </div>
+  const battedBalls = useMemo(() =>
+    pitches.filter(p => p.hcX != null && p.hcY != null && p.callDesc.includes('In play')),
+    [pitches]
+  );
 
-      {/* SVG Field */}
-      <div className="flex justify-center">
-        <svg
-          viewBox="0 0 300 300"
-          width="300"
-          height="300"
-          style={{ background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}
-        >
-          <BaseballField />
-          {filtered.map((p, i) => {
-            const { x, y } = toSvgCoords(p.hcX!, p.hcY!);
-            const color = getDotColor(p.abResult);
-            const isHit = ['Single', 'Double', 'Triple', 'Home Run'].includes(p.abResult);
+  const filtered = useMemo(() =>
+    bbType === 'all' ? battedBalls : battedBalls.filter(p => p.bbType === bbType),
+    [battedBalls, bbType]
+  );
+
+  const vsLHP = useMemo(() => filtered.filter(p => p.pitcherHand === 'L'), [filtered]);
+  const vsRHP = useMemo(() => filtered.filter(p => p.pitcherHand === 'R'), [filtered]);
+
+  return (
+    <div>
+      <div className="flex items-center justify-center gap-3 mb-3 flex-wrap">
+        <h3 className="text-sm font-semibold text-gray-700">타구 분포 (Spray Chart)</h3>
+        <div className="flex rounded-lg overflow-hidden border border-gray-300">
+          {(Object.keys(BB_TYPE_LABELS) as BbTypeFilter[]).map(key => {
+            const isActive = bbType === key;
             return (
-              <circle
-                key={i}
-                cx={x}
-                cy={y}
-                r={isHit ? 5 : 4}
-                fill={color}
-                opacity={0.8}
-                stroke="white"
-                strokeWidth="0.5"
+              <button key={key} onClick={() => setBbType(key)}
+                className={`px-3 py-1 text-xs font-medium transition-colors ${
+                  isActive
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
               >
-                <title>{`${p.abResult}${p.hitDistance ? ` (${p.hitDistance}ft)` : ''}`}</title>
-              </circle>
+                {BB_TYPE_LABELS[key]}
+              </button>
             );
           })}
-        </svg>
+        </div>
+      </div>
+
+      {/* 3-column layout: All / vs LHP / vs RHP */}
+      <div className="flex flex-wrap justify-center gap-4">
+        <SprayChartPanel pitches={filtered} title="전체" />
+        <SprayChartPanel pitches={vsLHP} title="vs 좌투 (LHP)" />
+        <SprayChartPanel pitches={vsRHP} title="vs 우투 (RHP)" />
       </div>
 
       {/* Legend */}
@@ -223,17 +177,12 @@ export default function SprayChart({ pitches }: { pitches: DomPitch[] }) {
           { label: '홈런', color: '#ef4444' },
           { label: '아웃', color: '#9ca3af' },
         ].map(({ label, color }) => (
-          <div key={label} className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
-            <span className="text-xs text-gray-500">{label}</span>
-          </div>
+          <span key={label} className="flex items-center gap-1">
+            <span className="inline-block w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
+            <span className="text-[10px] text-gray-500">{label}</span>
+          </span>
         ))}
       </div>
-
-      {/* Count */}
-      <p className="text-center text-xs text-gray-400 mt-2">
-        {filtered.length}개 타구 · 안타 {hitCount}개
-      </p>
     </div>
   );
 }
