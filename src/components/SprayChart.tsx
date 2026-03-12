@@ -25,100 +25,104 @@ function getDotColor(abResult: string): string {
   return '#9ca3af';
 }
 
+// Uniform scale: 400ft (center field) → 250 SVG units
+const SCALE = 250 / 400; // 0.625 SVG units per foot
+const HOME = { x: 150, y: 280 };
+// Polar coords from home plate: 0° = center field, -45° = LF line, +45° = RF line
+function polar(distFt: number, angleDeg: number) {
+  const rad = (angleDeg * Math.PI) / 180;
+  return {
+    x: HOME.x + distFt * SCALE * Math.sin(rad),
+    y: HOME.y - distFt * SCALE * Math.cos(rad),
+  };
+}
+
 function toSvgCoords(hcX: number, hcY: number): { x: number; y: number } {
   const xFeet = 2.5 * (hcX - 125.42);
   const yFeet = 2.5 * (198.27 - hcY);
-
-  const svgX = 150 + (xFeet / 180) * 140;
-  const svgY = 280 - (yFeet / 400) * 250;
-
-  return { x: svgX, y: svgY };
+  return {
+    x: HOME.x + xFeet * SCALE,
+    y: HOME.y - yFeet * SCALE,
+  };
 }
 
 function BaseballField() {
-  // Home plate at (150, 280), center field at (150, 30)
-  // Base positions (90ft spacing, scaled)
-  const scale = 250 / 400;
-  const baseDist = 90 * scale; // ~56.25 SVG units
+  // Diamond bases (90ft sides at 45° angles)
+  const first = polar(90, 45);
+  const second = polar(90 * Math.SQRT2, 0); // 127.3ft straight up
+  const third = polar(90, -45);
 
-  const home = { x: 150, y: 280 };
-  const first = { x: home.x + baseDist, y: home.y - baseDist };
-  const second = { x: home.x, y: home.y - baseDist * 2 };
-  const third = { x: home.x - baseDist, y: home.y - baseDist };
+  // Outfield fence endpoints on foul lines (330ft) and center (400ft)
+  const lf = polar(330, -45);
+  const cf = polar(400, 0);
+  const rf = polar(330, 45);
 
-  // Outfield fence arc: ~330ft left/right, ~400ft center
-  const ofScale = 250 / 400;
-  const lfX = 150 + (-330 * ofScale) * (140 / 180);
-  const lfY = 280 - 330 * ofScale;
-  const rfX = 150 + (330 * ofScale) * (140 / 180);
-  const rfY = lfY;
-  const cfX = 150;
-  const cfY = 280 - 400 * ofScale;
+  // Infield grass arc: 95ft radius circle centered at home, from 3B line to 1B line
+  const infR = 95 * SCALE; // ~59.4 SVG units
+  const infStart = polar(95, -45);
+  const infEnd = polar(95, 45);
 
-  // Infield arc radius (roughly 95ft from home)
-  const infieldR = 95 * scale;
+  // Pitching mound: 60.5ft from home
+  const mound = polar(60.5, 0);
 
   return (
     <g>
-      {/* Field background */}
-      <circle cx="150" cy="280" r="270" fill="#e8f5e9" opacity="0.3" />
-
-      {/* Outfield grass */}
+      {/* Outfield grass fill — foul lines + fence arc */}
       <path
-        d={`M ${home.x} ${home.y} L ${lfX} ${lfY} Q ${cfX} ${cfY - 10} ${rfX} ${rfY} Z`}
+        d={`M ${HOME.x} ${HOME.y} L ${lf.x} ${lf.y} Q ${cf.x} ${cf.y - 8} ${rf.x} ${rf.y} Z`}
         fill="#d1fae5"
-        opacity="0.5"
+        opacity="0.4"
       />
 
       {/* Outfield fence arc */}
       <path
-        d={`M ${lfX} ${lfY} Q ${cfX} ${cfY - 10} ${rfX} ${rfY}`}
+        d={`M ${lf.x} ${lf.y} Q ${cf.x} ${cf.y - 8} ${rf.x} ${rf.y}`}
         fill="none"
         stroke="#94a3b8"
         strokeWidth="2"
       />
 
-      {/* Foul lines to outfield */}
-      <line x1={home.x} y1={home.y} x2={lfX} y2={lfY} stroke="#cbd5e1" strokeWidth="1.5" />
-      <line x1={home.x} y1={home.y} x2={rfX} y2={rfY} stroke="#cbd5e1" strokeWidth="1.5" />
+      {/* Foul lines (home → LF/RF fence) */}
+      <line x1={HOME.x} y1={HOME.y} x2={lf.x} y2={lf.y} stroke="#cbd5e1" strokeWidth="1.5" />
+      <line x1={HOME.x} y1={HOME.y} x2={rf.x} y2={rf.y} stroke="#cbd5e1" strokeWidth="1.5" />
 
-      {/* Infield dirt */}
+      {/* Infield dirt diamond */}
       <path
-        d={`M ${home.x} ${home.y} L ${first.x} ${first.y} L ${second.x} ${second.y} L ${third.x} ${third.y} Z`}
+        d={`M ${HOME.x} ${HOME.y} L ${first.x} ${first.y} L ${second.x} ${second.y} L ${third.x} ${third.y} Z`}
         fill="#fef3c7"
         opacity="0.4"
       />
 
-      {/* Infield arc */}
+      {/* Infield grass arc (95ft from home, curves outward toward 2B) */}
       <path
-        d={`M ${third.x} ${third.y} A ${infieldR} ${infieldR} 0 0 1 ${first.x} ${first.y}`}
+        d={`M ${infStart.x} ${infStart.y} A ${infR} ${infR} 0 0 1 ${infEnd.x} ${infEnd.y}`}
         fill="none"
         stroke="#cbd5e1"
         strokeWidth="1"
         strokeDasharray="4,2"
       />
 
-      {/* Base paths */}
-      <line x1={home.x} y1={home.y} x2={first.x} y2={first.y} stroke="#94a3b8" strokeWidth="1.5" />
+      {/* Base path lines */}
+      <line x1={HOME.x} y1={HOME.y} x2={first.x} y2={first.y} stroke="#94a3b8" strokeWidth="1.5" />
       <line x1={first.x} y1={first.y} x2={second.x} y2={second.y} stroke="#94a3b8" strokeWidth="1.5" />
       <line x1={second.x} y1={second.y} x2={third.x} y2={third.y} stroke="#94a3b8" strokeWidth="1.5" />
-      <line x1={third.x} y1={third.y} x2={home.x} y2={home.y} stroke="#94a3b8" strokeWidth="1.5" />
+      <line x1={third.x} y1={third.y} x2={HOME.x} y2={HOME.y} stroke="#94a3b8" strokeWidth="1.5" />
 
       {/* Bases */}
-      <rect x={first.x - 4} y={first.y - 4} width="8" height="8" fill="white" stroke="#94a3b8" strokeWidth="1" />
-      <rect x={second.x - 4} y={second.y - 4} width="8" height="8" fill="white" stroke="#94a3b8" strokeWidth="1" />
-      <rect x={third.x - 4} y={third.y - 4} width="8" height="8" fill="white" stroke="#94a3b8" strokeWidth="1" />
+      <rect x={first.x - 3} y={first.y - 3} width="6" height="6" fill="white" stroke="#94a3b8" strokeWidth="1" transform={`rotate(45 ${first.x} ${first.y})`} />
+      <rect x={second.x - 3} y={second.y - 3} width="6" height="6" fill="white" stroke="#94a3b8" strokeWidth="1" transform={`rotate(45 ${second.x} ${second.y})`} />
+      <rect x={third.x - 3} y={third.y - 3} width="6" height="6" fill="white" stroke="#94a3b8" strokeWidth="1" transform={`rotate(45 ${third.x} ${third.y})`} />
 
-      {/* Home plate */}
+      {/* Home plate pentagon */}
       <polygon
-        points={`${home.x},${home.y - 6} ${home.x + 5},${home.y - 3} ${home.x + 5},${home.y + 3} ${home.x - 5},${home.y + 3} ${home.x - 5},${home.y - 3}`}
+        points={`${HOME.x},${HOME.y - 5} ${HOME.x + 4},${HOME.y - 2} ${HOME.x + 4},${HOME.y + 2} ${HOME.x - 4},${HOME.y + 2} ${HOME.x - 4},${HOME.y - 2}`}
         fill="white"
         stroke="#94a3b8"
         strokeWidth="1"
       />
 
       {/* Pitching mound */}
-      <circle cx="150" cy={home.y - baseDist} r="4" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="1" />
+      <circle cx={mound.x} cy={mound.y} r="3" fill="#e2e8f0" stroke="#94a3b8" strokeWidth="1" />
     </g>
   );
 }
